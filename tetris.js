@@ -189,10 +189,13 @@ class Map {
   }
 
   removeLineFull() {
+    let count = 0;
+
     for(let rowIdx = 0 ; rowIdx < this.d.length ; ++rowIdx) {
       let isRemoveLine = this.d[rowIdx].every(column => column.type !== 'empty');
 
       if (isRemoveLine) {
+        count++;
         const front = this.d.slice(0, rowIdx);
         const back = this.d.slice(rowIdx + 1, this.d.length);
         
@@ -210,6 +213,8 @@ class Map {
         }
       }
     }
+
+    return count;
   }
 
   isTopSeek() {
@@ -245,11 +250,13 @@ class Game {
   constructor(id) {
     this.map = new Map(id)
     this.movingBlock = this.generateBlock();
+    this.nextMovingBlock = this.generateBlock();
     this.timerId = null;
     this.count = 1;
     this.level = 0;
     this.isEnd = false;
     this.speedMode = false;
+    this.score = 0;
   }
 
   start() {
@@ -257,6 +264,7 @@ class Game {
     this.map.update(this.movingBlock);
     this.moveEvent();
     this.autoDown();
+    this.nextBlockRender();
   }
 
   autoDown() {
@@ -273,6 +281,10 @@ class Game {
       
       this.downMove();
       this.endGame();
+
+      this.scoreRender();
+      this.levelRender();
+      this.nextBlockRender();
     }, speed);
   }
 
@@ -280,6 +292,7 @@ class Game {
     if (this.map.isTopSeek()) {
       this.pause();
       this.isEnd = true;
+      alert("게임종료");
       return;
     }
   }
@@ -314,6 +327,10 @@ class Game {
         prevPosY,
         prevD
       });
+
+      this.scoreRender();
+      this.levelRender();
+      this.nextBlockRender();
     })
 
     window.addEventListener('keyup', (e) => {
@@ -356,7 +373,7 @@ class Game {
       this.movingBlock.posY += this.movingBlock.posY < (20 - this.movingBlock.getHeightSize()) ? 1 : 0;
     } else {
       this.map.seeding(); // 화면에 고정
-      this.map.removeLineFull(); // 라인제거
+      this.score += this.map.removeLineFull(); // 라인제거
       delete this.movingBlock; // 기존 블럭 객체 제거
       this.movingBlock = this.generateBlock(); // 새로운 블럭 생성
       
@@ -380,11 +397,70 @@ class Game {
   }
 
   generateBlock() {
-    return new Block(shapeType[ Math.floor(Math.random() * shapeType.length) + 0]);
+    const newBlock = new Block(shapeType[ Math.floor(Math.random() * shapeType.length) + 0]);
+    const movingBlock = this.nextMovingBlock || newBlock;
+    this.nextMovingBlock = new Block(shapeType[ Math.floor(Math.random() * shapeType.length) + 0]);
+    return movingBlock;
+  }
+
+  scoreRender() {
+    document.querySelector('.info.score').innerHTML = `점수: ${this.score}`;
+
+  }
+
+  levelRender() {
+    document.querySelector('.info.level').innerHTML = `레벨: ${this.level + 1}`;
+  }
+
+  nextBlockRender() {
+    const a = document.getElementById('preview'); //.querySelectorAll('.row')[blockRowIdx].querySelectorAll('.column')[blockColumnIdx];
+
+    let temp = '';
+    
+    for (let blockRowIdx in this.nextMovingBlock.d) {
+      temp += `
+        <li class="row">
+          <ul>
+      `;
+      for (let blockColumnIdx in this.nextMovingBlock.d[blockRowIdx]) {
+        const column = this.nextMovingBlock.d[blockRowIdx][blockColumnIdx]
+
+        if (column) {
+          temp += `
+            <li class="column ${this.nextMovingBlock.type}"></li>
+          `;
+        } else {
+          temp += `
+            <li class="column empty"></li>
+          `;
+        }
+      
+      }
+      temp += `
+          </ul>
+        </li>
+      `;
+    }
+
+    a.innerHTML = temp;
   }
 }
 
 
-const game = new Game("game");
-  
-game.start();
+let game = null;
+let isPause = false;
+
+document.getElementById('restart-btn').addEventListener('click', () => {
+  game = new Game("game");
+  game.start();
+})
+
+document.getElementById('pause-btn').addEventListener('click', () => {
+  isPause != isPause;
+  if (isPause) {
+    game.pause();
+  } else {
+    game.autoDown();
+  }
+})
+

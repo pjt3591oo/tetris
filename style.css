@@ -1,10 +1,13 @@
 * {
     padding: 0;
     margin: 0;
+    list-style: none;
+  
   }
   
   .container {
     border: 1px solid gray;
+    display: flex;
   }
   
   .row ul {
@@ -37,4 +40,23 @@
   }
   
   
+  .dashboard {
+    padding: 10px;
+    font-size: 18px;
+  }
   
+  .dashboard .info {
+    margin-top: 10px;
+  }
+  
+  .dashboard button {
+    width: 180px;
+    height: 54px;
+    border-radius: 5px;
+    border: 0;
+  
+  }
+  
+  .dashboard button:hover { 
+    cursor: pointer;
+  }
