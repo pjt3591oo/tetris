@@ -1,0 +1,40 @@
+* {
+    padding: 0;
+    margin: 0;
+  }
+  
+  .container {
+    border: 1px solid gray;
+  }
+  
+  .row ul {
+    display: flex;
+    width: 500px;
+  }
+  
+  li.column {
+    list-style: none;
+    width: 50px;
+    height: 50px;
+    border: 1px solid gray;
+    box-sizing: border-box;
+  }
+  
+  li.column.T{
+    background-color: red;
+  }
+  li.column.Z{
+    background-color: blue;
+  }
+  li.column.J{
+    background-color: green;
+  }
+  li.column.I{
+    background-color: yellow;
+  }
+  li.column.O{
+    background-color: black;
+  }
+  
+  
+  
