@@ -255,6 +255,7 @@ class Game {
     this.count = 1;
     this.level = 0;
     this.isEnd = false;
+    this.isPause = false;
     this.speedMode = false;
     this.score = 0;
   }
@@ -268,9 +269,12 @@ class Game {
   }
 
   autoDown() {
-    this.pause();
+    this.timerClear()
     let speed = this.speedMode ? 30 : levelSpeed[this.level] || 300;
     this.timerId = setInterval(() => {
+      console.log(this.isPause, this.isEnd);
+      if (this.isPause || this.isEnd) return ;
+      
       this.count++;
 
       if (this.count % 5 === 0 ) {
@@ -297,14 +301,14 @@ class Game {
     }
   }
 
-  pause() {
+  timerClear() {
     clearTimeout(this.timerId);
     this.timerId = null;
   }
 
   moveEvent() {
     window.addEventListener('keydown', (e) => {
-      if (this.isEnd) { return true }
+      if (this.isPause || this.isEnd) return ;
       const prevPosX = this.movingBlock.posX;
       const prevPosY = this.movingBlock.posY;
       const prevD = this.movingBlock.d;
@@ -444,23 +448,33 @@ class Game {
 
     a.innerHTML = temp;
   }
+
+  pause() {
+    this.isPause = true;
+  }
+
+  continue() {
+    this.isPause = false;
+  }
 }
 
-
+const restartBtn = document.getElementById('restart-btn');
+const pauseBtn = document.getElementById('pause-btn')
 let game = null;
-let isPause = false;
 
-document.getElementById('restart-btn').addEventListener('click', () => {
+restartBtn.addEventListener('click', () => {
   game = new Game("game");
   game.start();
 })
 
-document.getElementById('pause-btn').addEventListener('click', () => {
-  isPause != isPause;
-  if (isPause) {
-    game.pause();
+pauseBtn.addEventListener('click', () => {
+  console.log('pause btn click');
+  if (game.isPause) {
+    game.continue();
+    pauseBtn.innerText = '일시정지'
   } else {
-    game.autoDown();
+    game.pause();
+    pauseBtn.innerText = '이어하기'
   }
 })
 

@@ -1,62 +1,62 @@
 * {
-    padding: 0;
-    margin: 0;
-    list-style: none;
-  
-  }
-  
-  .container {
-    border: 1px solid gray;
-    display: flex;
-  }
-  
-  .row ul {
-    display: flex;
-    width: 500px;
-  }
-  
-  li.column {
-    list-style: none;
-    width: 50px;
-    height: 50px;
-    border: 1px solid gray;
-    box-sizing: border-box;
-  }
-  
-  li.column.T{
-    background-color: red;
-  }
-  li.column.Z{
-    background-color: blue;
-  }
-  li.column.J{
-    background-color: green;
-  }
-  li.column.I{
-    background-color: yellow;
-  }
-  li.column.O{
-    background-color: black;
-  }
-  
-  
-  .dashboard {
-    padding: 10px;
-    font-size: 18px;
-  }
-  
-  .dashboard .info {
-    margin-top: 10px;
-  }
-  
-  .dashboard button {
-    width: 180px;
-    height: 54px;
-    border-radius: 5px;
-    border: 0;
-  
-  }
-  
-  .dashboard button:hover { 
-    cursor: pointer;
-  }
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+}
+
+.container {
+  border: 1px solid gray;
+  display: flex;
+}
+
+.row ul {
+  display: flex;
+  width: 500px;
+}
+
+li.column {
+  list-style: none;
+  width: 50px;
+  height: 50px;
+  border: 1px solid gray;
+  box-sizing: border-box;
+}
+
+li.column.T{
+  background-color: red;
+}
+li.column.Z{
+  background-color: blue;
+}
+li.column.J{
+  background-color: green;
+}
+li.column.I{
+  background-color: yellow;
+}
+li.column.O{
+  background-color: black;
+}
+
+
+.dashboard {
+  padding: 10px;
+  font-size: 18px;
+}
+
+.dashboard .info {
+  margin-top: 10px;
+}
+
+.dashboard button {
+  width: 180px;
+  height: 54px;
+  border-radius: 5px;
+  border: 0;
+
+}
+
+.dashboard button:hover { 
+  cursor: pointer;
+}
