@@ -534,6 +534,8 @@ const pauseBtn = document.getElementById('pause-btn')
 let myGame = null;
 
 restartBtn.addEventListener('click', () => {
+  restartBtn.blur();
+
   if (myGame) {
     myGame.end();
   }
@@ -543,6 +545,7 @@ restartBtn.addEventListener('click', () => {
 })
 
 pauseBtn.addEventListener('click', () => {
+  pauseBtn.blur();
   if (myGame.isPause) {
     myGame.continue();
     pauseBtn.innerText = '일시정지'
