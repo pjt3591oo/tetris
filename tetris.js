@@ -1,33 +1,85 @@
 const shapeType = ['T', 'Z', 'J', 'I', 'O'];
 const shapeTypeMap = {
   'empty': [
-    [0, 0, 0],
-    [0, 0, 0],
-    [0, 0, 0],
+    [
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0],
+    ]
   ],
   'T': [
-    [0, 1, 0],
-    [1, 1, 1],
+    [
+      [0, 1, 0],
+      [1, 1, 1],
+    ],
+    [
+      [1, 0],
+      [1, 1],
+      [1, 0],
+    ],
+    [
+      [1, 1, 1],
+      [0, 1, 0],
+    ],
+    [
+      [0, 1],
+      [1, 1],
+      [0, 1],
+    ],
   ],
   'Z': [
-    [1, 1, 0],
-    [0, 1, 1],
+    [
+      [1, 1, 0],
+      [0, 1, 1],
+    ],
+    [
+      [0, 1],
+      [1, 1],
+      [1, 0],
+    ],
   ],
   'J': [
-    [0, 1],
-    [0, 1],
-    [1, 1],
+    [
+      [0, 1],
+      [0, 1],
+      [1, 1],
+    ],
+    [
+      [1, 0, 0],
+      [1, 1, 1],
+    ],
+    [
+      [1, 1],
+      [1, 0],
+      [1, 0],
+    ],
+    [
+      [1, 1, 1],
+      [0, 0, 1],
+    ],
   ],
   'I': [
-    [1],
-    [1],
-    [1],
-    [1],
+    [
+      [1],
+      [1],
+      [1],
+      [1],
+    ],
+    [
+      [1, 1, 1, 1]
+    ]
   ],
   'O': [
-    [1, 1],
-    [1, 1],
+    [
+      [1, 1],
+      [1, 1],
+    ]
   ]
+}
+
+const PLAYER_TYPE = {
+  'ME': 'me',
+  'OTHER': 'other',
 }
 
 class Block {
@@ -35,23 +87,19 @@ class Block {
     this.type = type;
     this.posX = 3;
     this.posY = 0;
-
-    this.d = shapeTypeMap[this.type];
+    this.rotateIdx = 0
+    this.d = shapeTypeMap[this.type][this.rotateIdx];
   }
 
   rotate() {
-    const result = [];
+    this.rotateIdx++;
 
-    for (let i = 0; i < this.d[0].length; i++) {
-      result[i] = [];
-      for (let j = 0; j < this.d.length; j++) {
-        result[i][j] = this.d[j][i];
-      }
+    if (this.rotateIdx >= shapeTypeMap[this.type].length) {
+      this.rotateIdx = 0;
     }
 
-    this.d = result;
-
-    return result;
+    this.d = shapeTypeMap[this.type][this.rotateIdx];
+    return shapeTypeMap[this.type][this.rotateIdx]
   }
 
   getHeightSize () {
@@ -247,7 +295,7 @@ class Map {
 const levelSpeed = [1_300, 1000, 800, 600, 500, 300]
 
 class Game {
-  constructor(id) {
+  constructor(id, playerType) {
     this.map = new Map(id)
     this.movingBlock = this.generateBlock();
     this.nextMovingBlock = this.generateBlock();
@@ -258,6 +306,8 @@ class Game {
     this.isPause = false;
     this.speedMode = false;
     this.score = 0;
+
+    this.playerType = playerType // PLAYER_TYPE.ME, PLAYER_TYPE.OTHER
   }
 
   start() {
@@ -269,6 +319,8 @@ class Game {
   }
 
   autoDown() {
+    if (this.playerType !== PLAYER_TYPE.ME) return;
+
     this.timerClear()
     let speed = this.speedMode ? 30 : levelSpeed[this.level] || 300;
     this.timerId = setInterval(() => {
@@ -306,6 +358,8 @@ class Game {
   }
 
   moveEvent() {
+    if (this.playerType !== PLAYER_TYPE.ME) return;
+
     window.addEventListener('keydown', this.moveEventHandler.bind(this));
     window.addEventListener('keyup', this.speedModeEventHandler.bind(this));
   }
@@ -415,16 +469,20 @@ class Game {
   }
 
   scoreRender() {
-    document.querySelector('.info.score').innerHTML = `점수: ${this.score}`;
+    if (this.playerType !== PLAYER_TYPE.ME) return;
 
+    document.querySelector('.info.score').innerHTML = `점수: ${this.score}`;
   }
 
   levelRender() {
+    if (this.playerType !== PLAYER_TYPE.ME) return;
+
     document.querySelector('.info.level').innerHTML = `레벨: ${this.level + 1}`;
   }
 
   nextBlockRender() {
-    const a = document.getElementById('preview'); //.querySelectorAll('.row')[blockRowIdx].querySelectorAll('.column')[blockColumnIdx];
+    if (this.playerType !== PLAYER_TYPE.ME) return;
+    const a = document.getElementById('preview'); 
 
     let temp = '';
     
@@ -473,24 +531,23 @@ class Game {
 const restartBtn = document.getElementById('restart-btn');
 const pauseBtn = document.getElementById('pause-btn')
 
-let game = null;
+let myGame = null;
 
 restartBtn.addEventListener('click', () => {
-  if (game) {
-    game.end();
+  if (myGame) {
+    myGame.end();
   }
-  game = new Game("game");
-  game.start();
+  myGame = new Game("game", 'me');
+  myGame.start();
   restartBtn.innerText = '다시시작';
 })
 
 pauseBtn.addEventListener('click', () => {
-  if (game.isPause) {
-    game.continue();
+  if (myGame.isPause) {
+    myGame.continue();
     pauseBtn.innerText = '일시정지'
   } else {
-    game.pause();
+    myGame.pause();
     pauseBtn.innerText = '이어하기'
   }
 })
-
