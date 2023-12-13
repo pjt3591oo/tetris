@@ -2,23 +2,34 @@
   padding: 0;
   margin: 0;
   list-style: none;
-
+  overflow-y: scroll no; 
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
-.container {
-  border: 1px solid gray;
+*::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera*/
+}
+
+.container,
+.other-container {
   display: flex;
 }
+
+.game-map {
+  padding: 10px;
+}
+
 
 .row ul {
   display: flex;
-  width: 500px;
+  width: 300px;
 }
 
 li.column {
   list-style: none;
-  width: 50px;
-  height: 50px;
+  width: 30px;
+  height: 30px;
   border: 1px solid gray;
   box-sizing: border-box;
 }
