@@ -272,7 +272,6 @@ class Game {
     this.timerClear()
     let speed = this.speedMode ? 30 : levelSpeed[this.level] || 300;
     this.timerId = setInterval(() => {
-      console.log(this.isPause, this.isEnd);
       if (this.isPause || this.isEnd) return ;
       
       this.count++;
@@ -307,41 +306,49 @@ class Game {
   }
 
   moveEvent() {
-    window.addEventListener('keydown', (e) => {
-      if (this.isPause || this.isEnd) return ;
-      const prevPosX = this.movingBlock.posX;
-      const prevPosY = this.movingBlock.posY;
-      const prevD = this.movingBlock.d;
+    window.addEventListener('keydown', this.moveEventHandler.bind(this));
+    window.addEventListener('keyup', this.speedModeEventHandler.bind(this));
+  }
 
-      if (e.key === 'ArrowLeft') {
-        this.leftMove()
-      } else if (e.key === 'ArrowDown') {
-        this.downMove();
-      } else if (e.key === 'ArrowRight') {
-        this.rightMove();
-      } else if (e.key === 'ArrowUp') {
-        // 회전
-        this.rotate()
-      } else if (e.code === 'Space') {
-        this.speedModeActive();
-      }
-      
-      this.map.update(this.movingBlock, {
-        prevPosX,
-        prevPosY,
-        prevD
-      });
+  inActiveEvent() {
+    window.removeEventListener('keydown', this.moveEventHandler.bind(this));
+    window.removeEventListener('keyup', this.speedModeEventHandler.bind(this));
+  }
 
-      this.scoreRender();
-      this.levelRender();
-      this.nextBlockRender();
-    })
+  moveEventHandler(e) {
+    if (this.isPause || this.isEnd) return ;
+    const prevPosX = this.movingBlock.posX;
+    const prevPosY = this.movingBlock.posY;
+    const prevD = this.movingBlock.d;
 
-    window.addEventListener('keyup', (e) => {
-      if (e.code === 'Space') {
-        this.speedModeInActive();
-      }
-    })
+    if (e.key === 'ArrowLeft') {
+      this.leftMove()
+    } else if (e.key === 'ArrowDown') {
+      this.downMove();
+    } else if (e.key === 'ArrowRight') {
+      this.rightMove();
+    } else if (e.key === 'ArrowUp') {
+      // 회전
+      this.rotate()
+    } else if (e.code === 'Space') {
+      this.speedModeActive();
+    }
+    
+    this.map.update(this.movingBlock, {
+      prevPosX,
+      prevPosY,
+      prevD
+    });
+
+    this.scoreRender();
+    this.levelRender();
+    this.nextBlockRender();
+  }
+
+  speedModeEventHandler(e) {
+    if (e.code === 'Space') {
+      this.speedModeInActive();
+    }
   }
 
   speedModeActive() {
@@ -456,19 +463,28 @@ class Game {
   continue() {
     this.isPause = false;
   }
+
+  end() {
+    this.timerClear();
+    this.inActiveEvent();
+  }
 }
 
 const restartBtn = document.getElementById('restart-btn');
 const pauseBtn = document.getElementById('pause-btn')
+
 let game = null;
 
 restartBtn.addEventListener('click', () => {
+  if (game) {
+    game.end();
+  }
   game = new Game("game");
   game.start();
+  restartBtn.innerText = '다시시작';
 })
 
 pauseBtn.addEventListener('click', () => {
-  console.log('pause btn click');
   if (game.isPause) {
     game.continue();
     pauseBtn.innerText = '일시정지'
